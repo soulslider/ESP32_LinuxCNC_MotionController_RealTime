@@ -33,7 +33,7 @@ void setupClientMode()
         logWarningMessage("ESP-NOW client is currently disabled in config");
     }
 
-    ESP32Encoder::useInternalWeakPullResistors = puType::UP;
+    ESP32Encoder::useInternalWeakPullResistors = puType::up;
     encoder.attachHalfQuad(32, 25);
     encoderTimer.attach_ms(10, checkEncoder);
 
