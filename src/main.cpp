@@ -237,7 +237,7 @@ bool startEthernet()
         logErrorMessage("Failed to install Ethernet driver. Ensure board type is correct!");
     }
 #elif ESP32_SPI_ETHERNET
-    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32) {
+    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0 || configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1) {
         ESP32_W5500_onEvent();
 
         ethernet_setup = ETH.begin( configSpiMisoPin, configSpiMosiPin, configSpiSckPin, configSpiCsPin, configSpiIntPin, SPI_CLOCK_MHZ, ETH_SPI_HOST, (uint8_t*) ethernet_mac );
@@ -600,7 +600,7 @@ void setup()
         WiFi.disconnect(true,false);  
         WiFi.mode(WIFI_OFF); /* shutdown wifi */
     }
-    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32) {
+    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0 || configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1) {
         i2s_out_init();
     }
 

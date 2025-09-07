@@ -22,7 +22,7 @@
   #undef MAX_STEPPER
 #endif
 #define MAX_STEPPER 6
-#define MAX_BOARD_TYPES 8
+#define MAX_BOARD_TYPES 9
 #define MAX_INPUTS 7
 #define MAX_OUTPUTS 7
 
@@ -82,7 +82,7 @@ typedef enum {
     BOARD_TYPE_ESP32_EVB,                   /* EVB */
     BOARD_TYPE_ESP32_GATEWAY,               /* GATEWAY */
     BOARD_TYPE_ESP32_WT32_ETH01,            /* WT32_ETH01 */
-    BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0,      /* MKS_DLC32 V2.0 */
+    BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0,     /* MKS_DLC32 V2.0 */
     BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1      /* MKS_DLC32 V2.1 */
 } board_type_t;
 
@@ -162,7 +162,6 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .gpio_number=GPIO_NUM_NC },
                         }
     },
-
     { .board_type=BOARD_TYPE_ESP32_POE, .num_steppers=3,
         .stepperConfig = {  
                             { .step=33, .direction=32, .enable_low_active=13, .enable_high_active=PIN_UNDEFINED }, 
@@ -188,7 +187,6 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .gpio_number=GPIO_NUM_NC },
                         }
     },
-
     { .board_type=BOARD_TYPE_ESP32_EVB, .num_steppers=3,
         .stepperConfig = {  
                             { .step=17, .direction=17, .enable_low_active=PIN_UNDEFINED, .enable_high_active=32 }, 
@@ -214,7 +212,6 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .gpio_number=GPIO_NUM_NC },
                         }
     },
-
     { .board_type=BOARD_TYPE_ESP32_GATEWAY, .num_steppers=3,
         .stepperConfig = {  
                             { .step=17, .direction=17, .enable_low_active=PIN_UNDEFINED, .enable_high_active=32 }, 
@@ -240,7 +237,6 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .gpio_number=GPIO_NUM_NC },
                         }
     },
-
     { .board_type=BOARD_TYPE_ESP32_WT32_ETH01, .num_steppers=4,
         .stepperConfig = {  
                             { .step=12, .direction=17, .enable_low_active=5, .enable_high_active=PIN_UNDEFINED }, 
@@ -267,7 +263,6 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .gpio_number=GPIO_NUM_NC },
                         }
     },
-
     { .board_type=BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0, .num_steppers=4,
         .stepperConfig = {  
                             { .step=25, .direction=I2SO(2), .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=LCD_CS_0, DIR=X_DIR
@@ -294,7 +289,6 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .name="Beeper", .gpio_number=I2SO(7) }, // BEEPER
                         }
     },
-
     { .board_type=BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1 .num_steppers=4,
         .stepperConfig = {  
                             { .step=I2SO(1), .direction=I2SO(2), .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=X_STEP, DIR=X_DIR

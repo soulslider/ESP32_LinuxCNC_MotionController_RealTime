@@ -63,7 +63,9 @@ inline String getBoardName(uint8_t board_type) {
             return "Olimex ESP32-GATEWAY";
         case BOARD_TYPE_ESP32_WT32_ETH01:
             return "SeedStudio WT32-ETH01";
-        case BOARD_TYPE_ESP32_MKSDLC32:
+        case BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0:
+            return "MKS-DLC32";
+        case BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1:
             return "MKS-DLC32";
         default:
             return "Default";

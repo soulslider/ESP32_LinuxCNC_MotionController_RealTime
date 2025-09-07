@@ -761,7 +761,7 @@ bool setupMotors()
     stepperEngine = FastAccelStepperEngine();
     stepperEngine.init(0); /* Use Core0 for stepper engine */
 
-    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32)
+    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0 || configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1)
         stepperEngine.setExternalCallForPin(fasExternalCallForPin);
     
     if (configVersion == 0) {

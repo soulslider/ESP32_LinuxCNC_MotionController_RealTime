@@ -25,7 +25,7 @@ void IRAM_ATTR digitalWrite(uint8_t pin, uint8_t val) {
         __digitalWrite(pin, val);
         return;
     }
-    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32)
+    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0 || configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1 )
         i2s_out_write(pin - I2S_OUT_PIN_BASE, val);
 }
 
@@ -47,7 +47,7 @@ int IRAM_ATTR digitalRead(uint8_t pin) {
     if (pin < I2S_OUT_PIN_BASE) {
         return __digitalRead(pin);
     }
-    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32)
+    if (configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0 || configBoardType == BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1)
         return i2s_out_read(pin - I2S_OUT_PIN_BASE);
     else
         return 0;
