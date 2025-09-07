@@ -6,5 +6,6 @@
     "cmake.parseBuildDiagnostics": false,
     "cmake.loadCompileCommands": false,
     "cmake.saveBeforeBuild": false,
-    "cmake.showSystemKits": false
+    "cmake.showSystemKits": false,
+    "C_Cpp.errorSquiggles": "disabled"
 }

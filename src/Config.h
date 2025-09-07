@@ -289,7 +289,7 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .name="Beeper", .gpio_number=I2SO(7) }, // BEEPER
                         }
     },
-    { .board_type=BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1 .num_steppers=4,
+    { .board_type=BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1, .num_steppers=4,
         .stepperConfig = {  
                             { .step=I2SO(1), .direction=I2SO(2), .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=X_STEP, DIR=X_DIR
                             { .step=I2SO(5), .direction=I2SO(6),  .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=Y_STEP, DIR=Y_DIR
@@ -316,7 +316,6 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .name="Beeper", .gpio_number=I2SO(7) }, // BEEPER
                         }
     }
-        
 };
 
 
