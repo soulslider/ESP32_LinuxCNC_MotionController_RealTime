@@ -22,7 +22,7 @@
   #undef MAX_STEPPER
 #endif
 #define MAX_STEPPER 6
-#define MAX_BOARD_TYPES 7
+#define MAX_BOARD_TYPES 8
 #define MAX_INPUTS 7
 #define MAX_OUTPUTS 7
 
@@ -31,9 +31,9 @@
 
 /* Ethernet config and IP Addressing */
 const static uint8_t   ethernet_mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-const static IPAddress ethernet_ip(192, 168, 111, 1); /* ESP32 Ethernet IP Address */
-const static IPAddress ethernet_ip_host(192, 168, 111, 2); /* LinuxCNC Ethernet adapter IP must be configured as this */
-const static IPAddress ethernet_gw(192, 168, 111, 254); /* Only useful if you connect ESP32 and LinuxCNC Host on same network segment with a router or another network */
+const static IPAddress ethernet_ip(192, 168, 0, 73); /* ESP32 Ethernet IP Address */
+const static IPAddress ethernet_ip_host(192, 168, 0, 71); /* LinuxCNC Ethernet adapter IP must be configured as this */
+const static IPAddress ethernet_gw(192, 168, 0, 1); /* Only useful if you connect ESP32 and LinuxCNC Host on same network segment with a router or another network */
 const static IPAddress ethernet_subnetmask(255, 255, 255, 0);
 
 /* Async UDP Client and Server is used to ensure bi-directional low-latency data streaming between ESP32 and LinuxCNC Host */
@@ -76,13 +76,14 @@ typedef enum  {
 
 
 typedef enum {
-    BOARD_TYPE_NONE = 0,            /* Basic board, no ethernet, wifi only */
-    BOARD_TYPE_ESP32_WOKWI_SIMUL,   /* WOKWI Simulator */
-    BOARD_TYPE_ESP32_POE,           /* POE */
-    BOARD_TYPE_ESP32_EVB,           /* EVB */
-    BOARD_TYPE_ESP32_GATEWAY,       /* GATEWAY */
-    BOARD_TYPE_ESP32_WT32_ETH01,    /* WT32_ETH01 */
-    BOARD_TYPE_ESP32_MKSDLC32       /* MKS_DLC32 */
+    BOARD_TYPE_NONE = 0,                    /* Basic board, no ethernet, wifi only */
+    BOARD_TYPE_ESP32_WOKWI_SIMUL,           /* WOKWI Simulator */
+    BOARD_TYPE_ESP32_POE,                   /* POE */
+    BOARD_TYPE_ESP32_EVB,                   /* EVB */
+    BOARD_TYPE_ESP32_GATEWAY,               /* GATEWAY */
+    BOARD_TYPE_ESP32_WT32_ETH01,            /* WT32_ETH01 */
+    BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0,      /* MKS_DLC32 V2.0 */
+    BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1      /* MKS_DLC32 V2.1 */
 } board_type_t;
 
 typedef struct {
@@ -267,12 +268,40 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                         }
     },
 
-    { .board_type=BOARD_TYPE_ESP32_MKSDLC32, .num_steppers=4,
+    { .board_type=BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_0, .num_steppers=4,
         .stepperConfig = {  
                             { .step=25, .direction=I2SO(2), .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=LCD_CS_0, DIR=X_DIR
                             { .step=26, .direction=I2SO(6),  .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=LCD_TOUCH_CS, DIR=Y_DIR
                             { .step=27, .direction=I2SO(4), .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=LCD_RST_0, DIR=Z_DIR
                             { .step=5, .direction=33, .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=LCD_EN_0, DIR=LCD_RS
+                        },
+        .inputConfigs = {
+                            {  },
+                            {  },
+                            {  },
+                            { .name="ProbeIn", .pullup=true, .gpio_number=GPIO_NUM_22, .register_address=GPIO_IN_REG,  .register_bit=BIT22 },  // Probe in
+                            { .name="Z-", .pullup=true, .gpio_number=GPIO_NUM_34, .register_address=GPIO_IN1_REG, .register_bit=BIT2 },   // Z- IN
+                            { .name="Y-", .pullup=true, .gpio_number=GPIO_NUM_35, .register_address=GPIO_IN1_REG, .register_bit=BIT3 },   // Y- IN
+                            { .name="X-", .pullup=true, .gpio_number=GPIO_NUM_36, .register_address=GPIO_IN1_REG, .register_bit=BIT4 },   // X- IN
+                        },
+        .outputConfigs = {  
+                            { .name="BlueLed", .gpio_number=GPIO_NUM_2 }, // Machine on = Blue LED
+                            { .gpio_number=GPIO_NUM_NC },
+                            { .gpio_number=GPIO_NUM_NC },
+                            { .gpio_number=GPIO_NUM_NC },
+                            { .gpio_number=GPIO_NUM_NC },
+                            { .name="PWMSpindle", .gpio_number=GPIO_NUM_32 }, // PWM "Spindle" output
+                            { .name="Beeper", .gpio_number=I2SO(7) }, // BEEPER
+                        }
+    },
+
+    { .board_type=BOARD_TYPE_ESP32_MKSDLC32_ETH_V2_1 .num_steppers=4,
+        .stepperConfig = {  
+                            { .step=I2SO(1), .direction=I2SO(2), .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=X_STEP, DIR=X_DIR
+                            { .step=I2SO(5), .direction=I2SO(6),  .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=Y_STEP, DIR=Y_DIR
+                            { .step=I2SO(3), .direction=I2SO(4), .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=Z_STEP, DIR=Z_DIR
+                            { .step=5, .direction=33, .enable_low_active=I2SO(0), .enable_high_active=PIN_UNDEFINED }, // STEP=LCD_EN_0, DIR=LCD_RS
+                            {}
                         },
         .inputConfigs = {
                             {  },
