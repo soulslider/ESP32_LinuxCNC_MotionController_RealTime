@@ -601,7 +601,7 @@ void IRAM_ATTR updateAxisState(uint8_t axisNum, uint8_t bit, bool new_value )
 void IRAM_ATTR ServoMovementCmds_ISR() 
 {
     if (machineEnabled) {
-        uint8_t moveResult = 0;
+        MoveResultCode moveResult = MoveResultCode::OK;
         bool anyMoving = false;
         
         /* 
@@ -650,7 +650,7 @@ void IRAM_ATTR ServoMovementCmds_ISR()
 
             /* For safety always check within loop to update a stationary axis regardless if moveTo is called or not */
 
-            if (moveResult != MOVE_OK) {
+            if (moveResult != MoveResultCode::OK) {
                 /* 
                     A failed moveTo() call will set the feedback position to the FastAccelStepper current motor position so it will throw a follower error in LinuxCNC if the library fails to generate any step pulses.
                     Tested & confirmed realtime position works using a physical machine with units and axis motor scaling set correctly. 
