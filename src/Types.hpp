@@ -8,14 +8,13 @@
 #include "FastAccelStepper.h"
 #include "AsyncTCP.h"
 #include <ESP32Console.h>
-#include "ArduinoNvs.h"
 #include "ConfigManager.h"
 #include <WiFi.h>
+#include "preferences.h"
 
 #if CONFIG_IDF_TARGET_ESP32S2
     #define Serial Serial0
 #endif
-
 
 const String version_number =  "v20250910.00";
 
@@ -213,5 +212,6 @@ extern void IRAM_ATTR inputPinChangeISR(void* args);
 extern void IRAM_ATTR outputHandler();
 extern void IRAM_ATTR inputHandler();
 extern void startSafeModeEthernet();
+extern Preferences NVS;
 
 #endif

@@ -42,14 +42,13 @@
 #include <Arduino.h>
 #include <ESP32Console.h>
 #include "ESP32Console/Helpers/PWDHelpers.h"
-#include "ArduinoNvs.h"
+#include <Preferences.h>
 #include <WiFi.h>        // For connecting ESP32 to WiFi
 #include <ArduinoOTA.h>  // For enabling over-the-air updates via network either WiFi or Ethernet
 #include <esp_timer.h>
 #include "soc/rtc_wdt.h"
 #include <esp_task_wdt.h>
 #include "esp32-hal-log.h"
-
 #include "Types.hpp"
 #include "ConsoleMenus.h"
 #include "Config.h"
@@ -58,7 +57,6 @@
 #include "ClientMode.h"
 #include "Pins.h"
 #include "I2SOut.h"
-
 
 #if ESP32_RMII_ETHERNET
     #include <ETH.h> /* Espressif RMII Native Ethernet lib */
@@ -83,7 +81,8 @@ xQueueHandle IRAM_ATTR inputInterruptQueue;
 bool eth_connected = false;
 bool wifi_connected = false;
 uint8_t inputPinInterruptFired[MAX_INPUTS] = { 0 };
-
+// Declare NVS storage instance
+Preferences NVS;
 
 /*==================================================================*/
 
@@ -492,13 +491,13 @@ void enterSafeMode(bool basic_commands=false)
         logWarningMessage("Use 'startethernet' safemode command to start Etherner for OTA firmware updates");
     }
     
-    NVS.setInt("BOOT_COUNT", 0); // Clear boot loop counter to retry on next boot
+    NVS.putChar("BOOT_COUNT", 0); // Clear boot loop counter to retry on next boot
 
 }
 bool safeModeHandler()    /* Returns true if in safemode. Setup() exits if true   */
 {
-    uint8_t bootCounter = NVS.getInt("BOOT_COUNT");
-    NVS.setInt("BOOT_COUNT", bootCounter+1);
+    uint8_t bootCounter = NVS.getChar("BOOT_COUNT");
+    NVS.putChar("BOOT_COUNT", bootCounter+1);
     logMessage("Boot Count: %d", bootCounter);
     if (bootCounter > 10){
         enterSafeMode(true);
@@ -555,8 +554,8 @@ void setup()
     gpio_install_isr_service(0);
     #endif
 
-    NVS.begin(); // init non-volatile flash storage for config store
-    
+    NVS.begin("storage", false); // init non-volatile flash storage for config store
+
     if (safeModeHandler()) 
         return; // Checks for boot loops. Before readNVSConfig in the event of a config related issue
     
@@ -648,7 +647,7 @@ void setup()
     if (configEspNowEnabled && configWifiMode != WIFI_MODE_APSTA)
         logWarningMessage("ESP-NOW is enabled but WiFi mode not set to AP+STA. See 'wificonfig' mode 3 in 'help'\r\n");
 
-    NVS.setInt("BOOT_COUNT", 0); // Reset boot loop detection
+    NVS.putChar("BOOT_COUNT", 0); // Reset boot loop detection
 }
 
 

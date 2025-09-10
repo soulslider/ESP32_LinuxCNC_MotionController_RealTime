@@ -190,7 +190,7 @@ void registerConsoleCmds()
                 arg = "off";
                 doMotorConfig = false;
             }
-            NVS.setInt("doMConf", (doMotorConfig) ? 1 : 0);
+            NVS.putChar("doMConf", (doMotorConfig) ? 1 : 0);
             setConsolePrompt(PURPLE, "R!");
             printf("Motor config is '%s'. Restart to apply\r\n", arg);
             return EXIT_SUCCESS;
@@ -227,7 +227,7 @@ void registerConsoleCmds()
             if (argc != 2) { printf_P(PSTR("Missing MAC address format 00:00:00:00:00:00\n")); return EXIT_FAILURE; }
             String arg = String(argv[1]);
             if (arg.length() == 17) {
-                NVS.setString("ESPNOW_PEER_MAC", arg.c_str());
+                NVS.putString("ESPNOW_PEER_MAC", arg.c_str());
                 configRemotePeerAddress = arg;
                 printf("Successfully set ESP-NOW Peer MAC address to '%s'", arg.c_str());
             } else {
@@ -250,7 +250,7 @@ void registerConsoleCmds()
             configMode = MODE_CLIENT;
             printf_P(PSTR("'Client' mode set\n")); 
         }
-        NVS.setInt("MODE", configMode);
+        NVS.putChar("MODE", configMode);
         printf_P(PSTR("Restart required\n"));
         setConsolePrompt(PURPLE, "R!");
         return EXIT_SUCCESS;
@@ -259,7 +259,7 @@ void registerConsoleCmds()
         if (argc != 2) { printf_P(PSTR("Missing 'on' or 'off'\n")); return EXIT_FAILURE; }
         auto arg = String(argv[1]);
         if (arg == "on") { configEspNowEnabled = true; } else {  arg = "off"; configEspNowEnabled = false; }
-        NVS.setInt("ESPNOW_ENABLE", (configEspNowEnabled) ? 1 : 0);
+        NVS.putChar("ESPNOW_ENABLE", (configEspNowEnabled) ? 1 : 0);
 
         printf("ESP-NOW config is '%s'\r\n", arg);
         return EXIT_SUCCESS;
@@ -371,7 +371,7 @@ void registerConsoleCmds()
             if (mode == 0) { // Wifi OFF
                 printf_P(PSTR("Disabling WiFI\r\n"));
                 WiFi.mode(WIFI_OFF);
-                NVS.setInt("WIFI_M", mode);
+                NVS.putChar("WIFI_M", mode);
                 return EXIT_SUCCESS;
             } else if (mode == 1) { // Wifi Station
                 printf_P(PSTR("WiFI Station Mode\r\n"));
@@ -389,10 +389,10 @@ void registerConsoleCmds()
             if (mode == 1 || mode == 3) // STA or APSTA
                 WiFi.begin(ssid.c_str(), password.c_str());
             
-            NVS.setInt("WIFI_M", mode);
-            NVS.setString("WIFI_SSID", ssid.c_str());
-            NVS.setString("WIFI_PWD", password.c_str());
-            NVS.setInt("WIFI_HIDE", hidessid);
+            NVS.putChar("WIFI_M", mode);
+            NVS.putString("WIFI_SSID", ssid.c_str());
+            NVS.putString("WIFI_PWD", password.c_str());
+            NVS.putChar("WIFI_HIDE", hidessid);
 
             return EXIT_SUCCESS;
         }, PSTR("Configure WiFi mode and AP/STA settings"));
@@ -539,11 +539,11 @@ void registerConsoleCmds()
             configSpiCsPin = cs_pin;
             configSpiIntPin = int_pin;
 
-            NVS.setInt("SPI_MISO", configSpiMisoPin);
-            NVS.setInt("SPI_MOSI", configSpiMosiPin);
-            NVS.setInt("SPI_SCK", configSpiSckPin);
-            NVS.setInt("SPI_CS", configSpiCsPin);
-            NVS.setInt("SPI_INT", configSpiIntPin);
+            NVS.putChar("SPI_MISO", configSpiMisoPin);
+            NVS.putChar("SPI_MOSI", configSpiMosiPin);
+            NVS.putChar("SPI_SCK", configSpiSckPin);
+            NVS.putChar("SPI_CS", configSpiCsPin);
+            NVS.putChar("SPI_INT", configSpiIntPin);
             
             printf("Set SPI Ethernet Pin config to MISO: %d, MOSI: %d, SCK: %d, CS: %d, INT: %d\r\n", miso_pin, mosi_pin, sck_pin, cs_pin, int_pin);
             

@@ -12,6 +12,9 @@
   #include "Eth.h"
 #endif
 
+/*==================================================================*/
+// NVS storage namespace
+#define STORAGE_NAMESPACE "storage"
 
 /*==================================================================*/
 // Serial baud rate

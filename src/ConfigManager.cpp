@@ -91,7 +91,7 @@ void setConfigEnvVars(bool silent)
 bool resetNvsConfig() {
     bool result = true;
     printf("Resetting NVS Config...\r\n");
-    NVS.eraseAll();
+    NVS.clear();
 
     return result;
 }
@@ -99,7 +99,7 @@ bool resetNvsConfig() {
 bool saveNvsConfig() {
     bool result = false;
     printf("Saving NVS Config...\r\n");
-    esp_err_t res = 0;
+    size_t res = 0;
     static char conf_name[20] = "";
 
     // if (configVersion == 0) { // Always initialise In/Out default structs on first config. Restored from NVS after
@@ -107,54 +107,55 @@ bool saveNvsConfig() {
     //     initIntputPinsConfig();
     // }
     
-    NVS.setInt("BOARD_TYPE", configBoardType);
-    NVS.setInt("NUM_STPPRS", configNumSteppers);
+    NVS.putChar("BOARD_TYPE", configBoardType);
+    NVS.putChar("NUM_STPPRS", configNumSteppers);
 
     for (uint8_t i = 0; i < configNumSteppers; i++) 
     {   
         sprintf(conf_name,"NV_MCONF%d",i);
         size_t size = sizeof(stepper_config_t);
         stepper_config_t *config = &board_pin_config.stepperConfig[i];
-        res = nvs_set_blob(NVS._nvs_handle, conf_name, (void*)config, size);
+        
+        res = NVS.putBytes(conf_name, (void *)config, size);
 
-        if (res == ESP_OK) {
-            result = true;
-        } else {
-            logErrorMessage("Unable to save motor: %d nvs config", i);
-            result = false;
-        }
+        // if (res > 0) {
+        //     result = true;
+        // } else {
+        //     logErrorMessage("Unable to save motor: %d nvs config", i);
+        //     result = false;
+        // }
     }
     for (uint8_t i = 0; i < MAX_INPUTS; i++) 
     {   
         sprintf(conf_name,"NV_INPCFG%d",i);
         size_t size = sizeof(inputpin_config_t);
         inputpin_config_t *config = &board_pin_config.inputConfigs[i];
-        res = nvs_set_blob(NVS._nvs_handle, conf_name, (void*)config, size);
+        res = NVS.putBytes(conf_name, (void*)config, size);
 
-        if (res == ESP_OK) {
-            result = true;
-        } else {
-            logErrorMessage("Unable to save input pin config: %d nvs config", i);
-            result = false;
-        }
+        // if (res > 0) {
+        //     result = true;
+        // } else {
+        //     logErrorMessage("Unable to save input pin config: %d nvs config", i);
+        //     result = false;
+        // }
     }
     for (uint8_t i = 0; i < MAX_OUTPUTS; i++) 
     {   
         sprintf(conf_name,"NV_OUTPCFG%d",i);
         size_t size = sizeof(outputpin_config_t);
         outputpin_config_t *config = &board_pin_config.outputConfigs[i];
-        res = nvs_set_blob(NVS._nvs_handle, conf_name, (void*)config, size);
+        res = NVS.putBytes(conf_name, (void*)config, size);
 
-        if (res == ESP_OK) {
-            result = true;
-        } else {
-            logErrorMessage("Unable to save output pin config: %d nvs config", i);
-            result = false;
-        }
+        // if (res > 0) {
+        //     result = true;
+        // } else {
+        //     logErrorMessage("Unable to save output pin config: %d nvs config", i);
+        //     result = false;
+        // }
     }
-    configVersion = NVS.getInt("configVer") +1;
-    NVS.setInt("configVer", configVersion);
-    NVS.setInt("NUM_STPPRS", configNumSteppers);
+    configVersion = NVS.getShort("configVer") +1;
+    NVS.putShort("configVer", configVersion);
+    NVS.putChar("NUM_STPPRS", configNumSteppers);
     printf("NVS Saved. Version: %d\r\n", configVersion);
     setConfigEnvVars();
     return result;
@@ -164,7 +165,7 @@ void readNvsConfig(bool silent)
 {
     printf("Reading NVS Config...\r\n");
     
-    configVersion = NVS.getInt("configVer");
+    configVersion = NVS.getShort("configVer");
     printf("NVS Config Version: %d\r\n", configVersion);
     
     configMode = (config_mode_t) (NVS.getInt("MODE") >= 1) ? MODE_CLIENT : MODE_CONTROLLER;
@@ -176,13 +177,13 @@ void readNvsConfig(bool silent)
 
 
 #ifndef ESP32_WOKWI_SIMULATOR // NOT SIMULATOR
-    doMotorConfig = (NVS.getInt("doMConf") >= 1) ? true : false;
-    configBoardType = (board_type_t) NVS.getInt("BOARD_TYPE");
+    doMotorConfig = (NVS.getChar("doMConf") >= 1) ? true : false;
+    configBoardType = (board_type_t) NVS.getChar("BOARD_TYPE");
     configBoardName = getBoardName(configBoardType);
-    configWifiMode = (wifi_mode_t) NVS.getInt("WIFI_M", 0);
+    configWifiMode = (wifi_mode_t) NVS.getChar("WIFI_M", 0);
     configWifiSSID = NVS.getString("WIFI_SSID");
     configWifiPwd = NVS.getString("WIFI_PWD");
-    configWifiHide = NVS.getInt("WIFI_HIDE", 0);
+    configWifiHide = NVS.getChar("WIFI_HIDE", 0);
 #else // SIMULATOR
     configWifiMode = WIFI_MODE_APSTA;
     configWifiSSID = "Wokwi-GUEST";
@@ -207,7 +208,7 @@ void readNvsConfig(bool silent)
 
 
 #ifndef ESP32_WOKWI_SIMULATOR // NOT SIMULATOR
-    configNumSteppers = NVS.getInt("NUM_STPPRS",0);
+    configNumSteppers = NVS.getChar("NUM_STPPRS",0);
     if (configNumSteppers == 0) {
         configNumSteppers = board_pin_config.num_steppers;
     }
@@ -215,13 +216,13 @@ void readNvsConfig(bool silent)
     
     configRemotePeerAddress = NVS.getString("ESPNOW_PEER_MAC");
     
-    configEspNowEnabled = (NVS.getInt("ESPNOW_ENABLE") >=1) ? true : false;
+    configEspNowEnabled = (NVS.getChar("ESPNOW_ENABLE") >=1) ? true : false;
 
-    configSpiMisoPin = NVS.getInt("SPI_MISO", 19);
-    configSpiMosiPin = NVS.getInt("SPI_MOSI", 23);
-    configSpiSckPin = NVS.getInt("SPI_SCK", 18);
-    configSpiCsPin = NVS.getInt("SPI_CS", 0);
-    configSpiIntPin = NVS.getInt("SPI_INT", 4);
+    configSpiMisoPin = NVS.getChar("SPI_MISO", 19);
+    configSpiMosiPin = NVS.getChar("SPI_MOSI", 23);
+    configSpiSckPin = NVS.getChar("SPI_SCK", 18);
+    configSpiCsPin = NVS.getChar("SPI_CS", 0);
+    configSpiIntPin = NVS.getChar("SPI_INT", 4);
 
     
     static char conf_name[20] = "";
@@ -231,42 +232,39 @@ void readNvsConfig(bool silent)
     for (uint8_t i = 0; i < configNumSteppers; i++) 
     {
         sprintf(conf_name, "NV_MCONF%d",i);
-        size_t size = sizeof(stepper_config_t);
         std::vector<stepper_config_t> *config;
-        esp_err_t res = nvs_get_blob(NVS._nvs_handle, conf_name, (void*)&config, &size);
+        size_t res = NVS.getBytes(conf_name, &config, NVS.getBytesLength(conf_name));
 
-        if (res != ESP_OK && size < 5) {
+        if (res == 0) {
             logErrorMessage("Unable to read NVS config for Motor: %d. Clear NVS and retry", i);
         } else {
-            memcpy(&board_pin_config.stepperConfig[i], &config, size);
+            memcpy(&board_pin_config.stepperConfig[i], &config, res);
         }
     }
     /* Load input pin configs from NVS 'NV_INPCFGn' key blobs */
     for (uint8_t i = 0; i < MAX_INPUTS; i++) 
     {
         sprintf(conf_name, "NV_INPCFG%d",i);
-        size_t size = sizeof(inputpin_config_t);
         std::vector<inputpin_config_t> *config;
-        esp_err_t res = nvs_get_blob(NVS._nvs_handle, conf_name, (void*)&config, &size);
+        size_t res = NVS.getBytes(conf_name, (uint8_t*)&config, NVS.getBytesLength(conf_name));
 
-        if (res != ESP_OK && size < 5) {
+        if (res == 0) {
             logErrorMessage("Unable to read NVS config for InputPin: %d. Clear NVS and retry", i);
         } else {
-            memcpy(&board_pin_config.inputConfigs[i], &config, size);
+            memcpy(&board_pin_config.inputConfigs[i], &config, res);
         }
     }
     /* Load output pin configs from NVS 'NV_INPCFGn' key blobs */
     for (uint8_t i = 0; i < MAX_OUTPUTS; i++) 
     {
         sprintf(conf_name, "NV_OUTPCFG%d",i);
-        size_t size = sizeof(outputpin_config_t);
         std::vector<outputpin_config_t> *config;
-        esp_err_t res = nvs_get_blob(NVS._nvs_handle, conf_name, (void*)&config, &size);
+        size_t res = NVS.getBytes(conf_name, (uint8_t*)&config, NVS.getBytesLength(conf_name));
 
-        if (res != ESP_OK && size < 5) {
+        if (res == 0) {
             logErrorMessage("Unable to read NVS config for OutputPin: %d. Clear NVS and retry", i);
         } else {
-            memcpy(&board_pin_config.outputConfigs[i], &config, size);
+            memcpy(&board_pin_config.outputConfigs[i], &config, res);
         }
     }
     setConfigEnvVars(silent);
